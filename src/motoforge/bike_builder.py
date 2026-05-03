@@ -125,24 +125,33 @@ def _apply_seed_variation(preset: BikePreset, options: BuildOptions) -> BikePres
 
 
 def _build_tire_tread(prefix: str, center: Point, preset: BikePreset, mats, objects: List, options: BuildOptions, version: str):
+    """Add subtle tread ridges on the outer surface of the tire torus."""
     detail = DETAIL_PROFILES[options.detail]
-    style = _style_profile(options.style)
     cx, cy, cz = center
-    radius = preset.wheel_radius + preset.tire_thickness * 0.28
+    # Outer surface of the tire torus: wheel_radius is the outer edge of the torus.
+    # Place tread blocks slightly on top of it for visible ridges.
+    radius = preset.wheel_radius + preset.tire_thickness * 0.35
     block_count = detail["tread_blocks"]
+    block_width = preset.wheel_width * 0.85
+    # Tread ridges are shallow: ~15% of tire thickness
+    block_depth = preset.tire_thickness * 0.15
+    # Each block covers ~70% of its arc slice, leaving gaps between blocks
+    block_arc = (2.0 * math.pi / block_count) * 0.70
+    arc_width = block_arc * radius  # arc length along circumference
+
     for i in range(block_count):
-        angle = 2.0 * math.pi * i / block_count
+        angle = 2.0 * math.pi * i / block_count + block_arc / 2.0
         x = cx + math.cos(angle) * radius
         z = cz + math.sin(angle) * radius
         block = add_beveled_box(
             f"{prefix}_tread_{i:02d}",
             (x, cy, z),
-            (preset.tire_thickness * 0.42 * style["tread_scale"], preset.wheel_width * 1.04, preset.tire_thickness * 0.18),
+            (block_depth, block_width, arc_width),
             mats["rubber_edge"],
-            bevel=0.006,
+            bevel=0.002,
             bevel_segments=1,
         )
-        block.rotation_euler[1] = -angle
+        block.rotation_euler = (0, -angle, 0)
         _append(objects, block, f"{prefix}_tread", version, preset.name)
 
 
@@ -505,8 +514,8 @@ def _build_body(rear: Point, front: Point, frame_points, preset: BikePreset, mat
     _append(objects, add_curve_tube("MF_exhaust_header_to_pipe", exhaust_points, 0.032, mats["metal"], bevel_resolution=detail["curve_bevel"]), "exhaust_pipe", version, preset.name)
     _append(objects, add_cylinder_between("MF_exhaust_tip", (rear_x - 0.04, -0.22, wheel_z + 0.18), (rear_x - 0.34, -0.22, wheel_z + 0.22), 0.055, mats["dark_metal"], vertices=14), "exhaust_tip", version, preset.name)
 
-    _append(objects, add_arc_fender("MF_front_fender", front, preset.wheel_radius + 0.035, preset.fender_width, 0.035, 38, 142, mats["body"], segments=detail["fender_segments"]), "front_fender", version, preset.name)
-    _append(objects, add_arc_fender("MF_rear_fender", rear, preset.wheel_radius + 0.035, preset.fender_width, 0.035, 45, 155, mats["body"], segments=detail["fender_segments"]), "rear_fender", version, preset.name)
+    _append(objects, add_arc_fender("MF_front_fender", front, preset.wheel_radius + preset.tire_thickness + 0.06, preset.fender_width, 0.035, 55, 125, mats["body"], segments=detail["fender_segments"]), "front_fender", version, preset.name)
+    _append(objects, add_arc_fender("MF_rear_fender", rear, preset.wheel_radius + preset.tire_thickness + 0.06, preset.fender_width, 0.035, 50, 130, mats["body"], segments=detail["fender_segments"]), "rear_fender", version, preset.name)
 
     headlight_center = (front_x - 0.40, 0.0, 1.27 + ground * 0.20)
     if preset.name == "sport_bike" or options.silhouette == "sporty":

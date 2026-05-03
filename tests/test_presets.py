@@ -41,9 +41,9 @@ def test_hex_to_rgba():
 
 
 def test_paths_for_output():
-    assert preview_path_for("dist/moto.glb") == "dist/moto_preview.png"
-    assert manifest_path_for("dist/moto.glb") == "dist/moto_manifest.json"
-    assert lod_path_for("dist/moto.glb", "lod1") == "dist/moto_lod1.glb"
+    assert preview_path_for("dist/moto.glb") == str(Path("dist/moto_preview.png"))
+    assert manifest_path_for("dist/moto.glb") == str(Path("dist/moto_manifest.json"))
+    assert lod_path_for("dist/moto.glb", "lod1") == str(Path("dist/moto_lod1.glb"))
 
 
 def test_options_validate():
