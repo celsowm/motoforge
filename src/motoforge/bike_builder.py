@@ -128,31 +128,93 @@ def _build_tire_tread(prefix: str, center: Point, preset: BikePreset, mats, obje
     """Add subtle tread ridges on the outer surface of the tire torus."""
     detail = DETAIL_PROFILES[options.detail]
     cx, cy, cz = center
-    # Outer surface of the tire torus: wheel_radius is the outer edge of the torus.
-    # Place tread blocks slightly on top of it for visible ridges.
-    radius = preset.wheel_radius + preset.tire_thickness * 0.35
     block_count = detail["tread_blocks"]
-    block_width = preset.wheel_width * 0.85
-    # Tread ridges are shallow: ~15% of tire thickness
-    block_depth = preset.tire_thickness * 0.15
-    # Each block covers ~70% of its arc slice, leaving gaps between blocks
-    block_arc = (2.0 * math.pi / block_count) * 0.70
-    arc_width = block_arc * radius  # arc length along circumference
 
-    for i in range(block_count):
-        angle = 2.0 * math.pi * i / block_count + block_arc / 2.0
-        x = cx + math.cos(angle) * radius
-        z = cz + math.sin(angle) * radius
-        block = add_beveled_box(
-            f"{prefix}_tread_{i:02d}",
-            (x, cy, z),
-            (block_depth, block_width, arc_width),
-            mats["rubber_edge"],
-            bevel=0.002,
-            bevel_segments=1,
-        )
-        block.rotation_euler = (0, -angle, 0)
-        _append(objects, block, f"{prefix}_tread", version, preset.name)
+    if preset.name in ("dirt_bike", "cyber_scrambler"):
+        # Chunky blocks, but properly sized so they don't look like giant paddles
+        radius = preset.wheel_radius + preset.tire_thickness * 0.10
+        block_width = preset.wheel_width * 0.70
+        block_depth = preset.tire_thickness * 0.20
+        block_arc = (2.0 * math.pi / block_count) * 0.60
+        arc_width = block_arc * radius
+
+        for i in range(block_count):
+            angle = 2.0 * math.pi * i / block_count + block_arc / 2.0
+            x = cx + math.cos(angle) * radius
+            z = cz + math.sin(angle) * radius
+            block = add_beveled_box(
+                f"{prefix}_tread_{i:02d}",
+                (x, cy, z),
+                (block_depth, block_width, arc_width),
+                mats["rubber_edge"],
+                bevel=0.002,
+                bevel_segments=1,
+            )
+            # Use rotation_mode = 'QUATERNION' for perfect radial alignment
+            cy_ang = math.cos(-angle / 2.0)
+            sy_ang = math.sin(-angle / 2.0)
+            block.rotation_mode = 'QUATERNION'
+            block.rotation_quaternion = (cy_ang, 0.0, sy_ang, 0.0)
+            _append(objects, block, f"{prefix}_tread", version, preset.name)
+    else:
+        # Sport / Street / Cafe Racer: V-pattern subtle treads
+        block_count = int(block_count * 1.5)
+        block_width = preset.wheel_width * 0.42
+        block_depth = preset.tire_thickness * 0.05
+        block_arc = (2.0 * math.pi / block_count) * 0.85
+
+        # Move them slightly inwards to wrap the tire curve
+        y_offset = preset.wheel_width * 0.22
+        radius = preset.wheel_radius + preset.tire_thickness * 0.02
+        arc_width = block_arc * radius
+
+        for i in range(block_count):
+            angle = 2.0 * math.pi * i / block_count
+            twist = 0.45 # ~25 degrees twist
+
+            # Left block
+            xl = cx + math.cos(angle) * radius
+            zl = cz + math.sin(angle) * radius
+            bl = add_beveled_box(
+                f"{prefix}_tread_L_{i:02d}",
+                (xl, cy - y_offset, zl),
+                (block_depth, block_width, arc_width),
+                mats["rubber_edge"],
+                bevel=0.001,
+                bevel_segments=1,
+            )
+            bl.rotation_mode = 'QUATERNION'
+            cy_ang = math.cos(-angle / 2.0)
+            sy_ang = math.sin(-angle / 2.0)
+            cx_ang = math.cos(twist / 2.0)
+            sx_ang = math.sin(twist / 2.0)
+            w = cy_ang * cx_ang
+            x = cy_ang * sx_ang
+            y = sy_ang * cx_ang
+            z = sy_ang * sx_ang
+            bl.rotation_quaternion = (w, x, y, z)
+            _append(objects, bl, f"{prefix}_tread", version, preset.name)
+
+            # Right block (staggered slightly by shifting angle? No, keep V shape)
+            xr = cx + math.cos(angle) * radius
+            zr = cz + math.sin(angle) * radius
+            br = add_beveled_box(
+                f"{prefix}_tread_R_{i:02d}",
+                (xr, cy + y_offset, zr),
+                (block_depth, block_width, arc_width),
+                mats["rubber_edge"],
+                bevel=0.001,
+                bevel_segments=1,
+            )
+            br.rotation_mode = 'QUATERNION'
+            cx_ang2 = math.cos(-twist / 2.0)
+            sx_ang2 = math.sin(-twist / 2.0)
+            w2 = cy_ang * cx_ang2
+            x2 = cy_ang * sx_ang2
+            y2 = sy_ang * cx_ang2
+            z2 = sy_ang * sx_ang2
+            br.rotation_quaternion = (w2, x2, y2, z2)
+            _append(objects, br, f"{prefix}_tread", version, preset.name)
 
 
 def _build_wheel(prefix: str, center: Point, preset: BikePreset, mats, objects: List, options: BuildOptions, version: str):
