@@ -1,0 +1,11 @@
+{
+  "preset": "cyber_scrambler",
+  "output": "dist/moto_cyber_scrambler.glb",
+  "detail": "high",
+  "style": "cyberpunk",
+  "silhouette": "scrambler",
+  "wheelDetail": "alloy",
+  "collision": "simple",
+  "seed": 17,
+  "variantStrength": 0.18
+}

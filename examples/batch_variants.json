@@ -1,0 +1,33 @@
+{
+  "defaults": {
+    "detail": "medium",
+    "style": "realistic_lowpoly",
+    "collision": "simple",
+    "wheelDetail": "alloy"
+  },
+  "jobs": [
+    {
+      "preset": "streetfighter",
+      "output": "dist/batch_streetfighter_a.glb",
+      "seed": 101,
+      "variantStrength": 0.25,
+      "primaryColor": "#111111",
+      "accentColor": "#d7ff2f"
+    },
+    {
+      "preset": "sport_bike",
+      "output": "dist/batch_sport_b.glb",
+      "seed": 202,
+      "variantStrength": 0.30,
+      "primaryColor": "#0b0c10",
+      "accentColor": "#ff3131"
+    },
+    {
+      "preset": "cyber_scrambler",
+      "output": "dist/batch_cyber_scrambler_c.glb",
+      "style": "cyberpunk",
+      "seed": 303,
+      "variantStrength": 0.20
+    }
+  ]
+}

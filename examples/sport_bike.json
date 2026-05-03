@@ -1,0 +1,13 @@
+{
+  "preset": "sport_bike",
+  "output": "dist/moto_sport_bike.glb",
+  "detail": "high",
+  "style": "realistic_lowpoly",
+  "silhouette": "sporty",
+  "wheelDetail": "alloy",
+  "collision": "detailed",
+  "seed": 7,
+  "variantStrength": 0.2,
+  "primaryColor": "#111111",
+  "accentColor": "#ff3b30"
+}

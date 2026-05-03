@@ -1,0 +1,14 @@
+{
+  "preset": "streetfighter",
+  "output": "dist/streetfighter_lods.glb",
+  "detail": "high",
+  "style": "realistic_lowpoly",
+  "silhouette": "streetfighter",
+  "wheelDetail": "alloy",
+  "collision": "detailed",
+  "lods": true,
+  "seed": 42,
+  "variantStrength": 0.35,
+  "primaryColor": "#111111",
+  "accentColor": "#d7ff2f"
+}

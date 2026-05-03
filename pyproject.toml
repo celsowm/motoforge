@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "motoforge"
+version = "0.0.3"
+description = "Procedural Blender motorcycle asset generator for game prototypes."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "MotoForge" }]
+license = { text = "MIT" }
+keywords = ["blender", "3d", "game-assets", "procedural", "glb"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Topic :: Multimedia :: Graphics :: 3D Modeling",
+  "Development Status :: 2 - Pre-Alpha"
+]
+
+[project.scripts]
+motoforge = "motoforge.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
